@@ -27,10 +27,10 @@ type (
 )
 
 func (h httpPropagator) Extract(carrier interface{}) (Carrier, error) {
-	if c, ok := carrier.(http.Header); !ok {
-		return nil, ErrInvalidCarrier
-	} else {
+	if c, ok := carrier.(http.Header); ok {
 		return httpCarrier(c), nil
+	} else {
+		return nil, ErrInvalidCarrier
 	}
 }
 
