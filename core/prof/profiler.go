@@ -7,18 +7,22 @@ type (
 		*utils.ElapsedTimer
 	}
 
+	//接口
 	Profiler interface {
 		Start() ProfilePoint
 		Report(name string, point ProfilePoint)
 	}
 
+	//实现了上述接口
 	RealProfiler struct{}
 
 	NullProfiler struct{}
 )
 
+//全局变量
 var profiler = newNullProfiler()
 
+//暴露出去的接口
 func EnableProfiling() {
 	profiler = newRealProfiler()
 }

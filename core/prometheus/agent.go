@@ -18,6 +18,7 @@ func StartAgent(c Config) {
 			return
 		}
 
+		//单独起一个server，监听prometheus的metrics
 		threading.GoSafe(func() {
 			http.Handle(c.Path, promhttp.Handler())
 			addr := fmt.Sprintf("%s:%d", c.Host, c.Port)
@@ -28,3 +29,5 @@ func StartAgent(c Config) {
 		})
 	})
 }
+
+//done

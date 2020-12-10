@@ -37,6 +37,7 @@ var (
 
 func report(name string, duration time.Duration) {
 	updated := func() bool {
+		//如果slot已经存在，只需要读slots，更新其中一个slot，用读锁
 		profileCenter.lock.RLock()
 		defer profileCenter.lock.RUnlock()
 
@@ -52,6 +53,7 @@ func report(name string, duration time.Duration) {
 
 	if !updated {
 		func() {
+			//如果slot不存在，需要写slots，用写锁
 			profileCenter.lock.Lock()
 			defer profileCenter.lock.Unlock()
 
@@ -64,12 +66,14 @@ func report(name string, duration time.Duration) {
 		}()
 	}
 
+	//单例启动一个goroutine去不断flush报告
 	once.Do(flushRepeatly)
 }
 
 func flushRepeatly() {
 	threading.GoSafe(func() {
 		for {
+			//每5分钟输出profile报告到日志文件stat.log
 			time.Sleep(flushInterval)
 			logx.Stat(generateReport())
 		}
